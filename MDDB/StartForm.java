@@ -2,6 +2,7 @@ package com.MDDB;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.*;
 import java.util.ArrayList;
 
 /**
@@ -15,18 +16,6 @@ public class StartForm {
         panelMain.setLayout(new GridLayout(rows.length,rows[0].length));
         ArrayList<JTextArea> listOfTextFields = new ArrayList<>();
 
-        /*for (String[] ss : rows){
-            for (int j = 0; j < ss.length; j++) {
-                //JTextArea jtext = new JTextArea(ss[j]);
-                JTextArea jtext = new JTextArea(j + " ");
-                if (j%2!=0){
-                    jtext.setFont(new Font(jtext.getFont().getName(), Font.BOLD, 18));
-                }
-                listOfTextFields.add(0,jtext);
-            }
-        }*/
-
-
         for (int i = 0; i < rows.length; i++) {
             for (int j = 0; j < rows[0].length; j++) {
                 JTextArea jtext = new JTextArea(rows[i][j]);
@@ -39,6 +28,39 @@ public class StartForm {
     }
 
     public static void main(String[] args) {
+        Connection c = null;
+        Statement stmt = null;
+        try {
+            //Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:MDDB.mddb");
+            System.out.println("Opened database successfully");
+
+            stmt = c.createStatement();
+            String sql = "SELECT * FROM Devices";
+            //stmt.executeUpdate(sql);
+
+            //System.out.printf(stmt.getResultSet().toString());
+
+            ResultSet rs = stmt.executeQuery(sql);
+            ResultSetMetaData rsmd = rs.getMetaData();
+            String name = rsmd.getColumnName(1);
+            System.out.println(name);
+            while(rs.next()){
+                System.out.println(rs.getString("Company"));
+            }
+
+            stmt.close();
+            c.close();
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
+        System.out.println("SQL Script sucessfully");
+
+
+
+
+
         JFrame frame = new JFrame("Mainbord Device Data Base");
 
         //Здесь достаём из БД нужный телефон с характеристиками [строк][столбцов]
