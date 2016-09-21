@@ -75,7 +75,7 @@ public class StartForm {
         frame.setContentPane(new StartForm(devicesParamsMap).panelMain);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-        frame.setSize(600,600);
+        frame.setSize(600,200);
         frame.setVisible(true);
     }
 
