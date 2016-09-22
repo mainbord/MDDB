@@ -36,7 +36,10 @@ public class StartForm {
         try {
             //Class.forName("org.sqlite.JDBC");
             //To use DriverManager you need sqlite driver in /jre/lib/ext
-            c = DriverManager.getConnection("jdbc:sqlite:/home/mainbord/Документы/MDDB");
+            //linux path
+            //c = DriverManager.getConnection("jdbc:sqlite:/home/mainbord/Документы/MDDB");
+            //windows path
+            c = DriverManager.getConnection("jdbc:sqlite:C:/Users/work/IdeaProjects/MDDB/MDDB.mddb");
 
             System.out.println("Opened database successfully");
 
