@@ -12,10 +12,24 @@ import java.util.Map;
  */
 public class StartForm {
     private JPanel panelMain;
+    private JButton openDevice;
 
     StartForm(Map<String,String> raws){
         panelMain = new JPanel();
-        panelMain.setLayout(new GridLayout(raws.keySet().size(),2));
+        //panelMain.setLayout(new GridLayout(raws.keySet().size(),2));
+        int additionalPlaces = 0;
+
+        openDevice = new JButton("Show device");
+        panelMain.add(openDevice);
+        additionalPlaces++;
+        panelMain.add(new JButton("Other Button"));
+        additionalPlaces++;
+        panelMain.add(new JButton("Other Button"));
+        additionalPlaces++;
+        panelMain.add(new JLabel(""));
+        additionalPlaces++;
+        panelMain.add(new JLabel("Введите название устройства"));
+        panelMain.add(new JList<String>());
 
         for (Map.Entry<String,String> temp : raws.entrySet()){
             JTextArea jtext = new JTextArea(temp.getKey());
@@ -23,7 +37,10 @@ public class StartForm {
             panelMain.add(jtext);
             jtext = new JTextArea(temp.getValue());
             panelMain.add(jtext);
+
+
         }
+        panelMain.setLayout(new GridLayout(raws.keySet().size() + additionalPlaces,2));
     }
 
     public static void main(String[] args) {
@@ -39,7 +56,10 @@ public class StartForm {
             //linux path
             //c = DriverManager.getConnection("jdbc:sqlite:/home/mainbord/Документы/MDDB");
             //windows path
-            c = DriverManager.getConnection("jdbc:sqlite:C:/Users/work/IdeaProjects/MDDB/MDDB.mddb");
+
+            String dataBasePath = "C:/Users/work/IdeaProjects/MDDB/MDDB.mddb";
+            String driverManagerString = "jdbc:sqlite:" + dataBasePath;
+            c = DriverManager.getConnection(driverManagerString);
 
             System.out.println("Opened database successfully");
 
@@ -73,7 +93,6 @@ public class StartForm {
 
         JFrame frame = new JFrame("Mainbord Device Data Base");
         //Здесь достаём из БД нужный телефон с характеристиками [строк][столбцов]
-
 
         frame.setContentPane(new StartForm(devicesParamsMap).panelMain);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
