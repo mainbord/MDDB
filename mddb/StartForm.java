@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
+import java.nio.file.Path;
 import java.sql.*;
 import java.util.*;
 
@@ -13,14 +15,15 @@ import java.util.*;
 public class StartForm {
     private JPanel panelMain;
     private JButton openDevice;
-    private static JTextField jTextFieldDatabase;
+    private static JTextField jTextFieldDatabase = new JTextField();
+    private static String databasePath;
 
 
 
 
 
-    StartForm(Map<Integer, String> devicesMap){
-    //StartForm(Map<String,String> raws, Map<Integer, String> devicesMap){
+    //StartForm(Map<Integer, String> devicesMap){
+    StartForm(Map<Integer,String> raws, int deviceID){
         panelMain = new JPanel();
         panelMain.setLayout(new GridLayout(raws.keySet().size(),2));
         int additionalPlaces = 0;
@@ -42,6 +45,7 @@ public class StartForm {
         openDevice.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
 
 
 
@@ -84,7 +88,7 @@ public class StartForm {
                         }
                     }
 
-                    params = new String[listColumnsNames.size()][2];
+                    //params = new String[listColumnsNames.size()][2];
 
                     stmt.close();
                     c.close();
@@ -102,8 +106,7 @@ public class StartForm {
 
 
 
-
-                for (Map.Entry<String,String> temp : raws.entrySet()){
+                for (Map.Entry<String,String> temp : devicesParamsMap.entrySet()){
                     JTextArea jtext = new JTextArea(temp.getKey());
                     jtext.setFont(new Font(jtext.getFont().getName(), Font.BOLD, 16));
                     panelMain.add(jtext);
@@ -126,24 +129,71 @@ public class StartForm {
 
     public static void main(String[] args) {
 
+        //Search settings file, if exists - read it, else create and ask about path
+        System.out.println(System.getProperties().getProperty("os.name"));
+        File settingsFile = new File(System.getProperties().getProperty("user.home") + System.getProperties().getProperty("file.separator") + "mddbSettings.txt");
+        System.out.println(settingsFile.toString());
+        if (!settingsFile.exists()) {
+            try {
+                settingsFile.createNewFile();
+                //JOptionPane.showConfirmDialog(null, "На найден файл настроек. Введите адрес БД и нажмите ОК.", "Ошибка", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                databasePath = JOptionPane.showInputDialog("Введите адрес базы данных");
+            } catch (IOException e) {
+                System.out.println("Error to create file" + settingsFile);
+                e.printStackTrace();
+            }
+        }
+        try (BufferedReader reader = new BufferedReader(new FileReader(settingsFile.toString()))){
+            ArrayList<String> lines = new ArrayList<>();
+            while (reader.ready()){
+                lines.add(reader.readLine());
+            }
+            //get databasepath from database
+            System.out.println("________ " + lines.get(0));
+            databasePath = lines.get(0);
+            jTextFieldDatabase.setText(databasePath);
+        }
+        catch (IOException e){
+            System.out.println("Error in input-output system");
+            e.printStackTrace();
+        }
+
+        catch (Exception e){
+            databasePath = JOptionPane.showInputDialog("Другая ошибка при открытии БД. Введите адрес базы данных ещё раз.");
+            jTextFieldDatabase.setText(databasePath);
+        }
+
+
+        //Здесь достаём из БД нужный телефон с характеристиками [строк][столбцов]
         Map<Integer, String> devicesMap = new TreeMap<>();
         int countDevies = 0;
+        int devicesID = 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         JFrame frame = new JFrame("Mainbord Device Data Base");
-        //frame.setContentPane(new StartForm(devicesParamsMap, devicesMap).panelMain);
-        frame.setContentPane(new StartForm(devicesMap).panelMain);
+        frame.setContentPane(new StartForm(devicesMap, devicesID).panelMain);
+//        frame.setContentPane(new StartForm(devicesMap).panelMain);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setSize(600,200);
         frame.setVisible(true);
-
-
-
-
-
-
-
-        //Здесь достаём из БД нужный телефон с характеристиками [строк][столбцов]
 
 
     }
